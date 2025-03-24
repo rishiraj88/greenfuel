@@ -2,7 +2,7 @@ package cp.chargeotg.gateway.controller;
 
 import cp.chargeotg.gateway.dto.ChargingSessionReq;
 import cp.chargeotg.gateway.dto.ChargingSessionResp;
-import cp.chargeotg.gateway.service.GatewayService;
+import cp.chargeotg.gateway.service.GatewayServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -33,11 +34,10 @@ class GatewayControllerTest {
     private static ChargingSessionReq chargingSessionReq;
     private static URL callbackUrl;
     private static Validator validator;
-
     @InjectMocks
     private GatewayController gatewayController;
     @Mock
-    private GatewayService gatewayService;
+    private GatewayServiceImpl gatewayService;
 
     @BeforeAll
     static void beforeAll() throws URISyntaxException, MalformedURLException {
@@ -69,7 +69,7 @@ class GatewayControllerTest {
     @Test
     void should_return_violations_when_driverId_is_longer_than_80_characters() {
         //when
-        chargingSessionReq = new ChargingSessionReq(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "0123456789".repeat(8)+"1", callbackUrl);
+        chargingSessionReq = new ChargingSessionReq(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "0123456789".repeat(8) + "1", callbackUrl);
         //then
         Set<ConstraintViolation<ChargingSessionReq>> violations = validator.validate(chargingSessionReq);
         System.out.println(violations);
@@ -84,13 +84,13 @@ class GatewayControllerTest {
         Set<ConstraintViolation<ChargingSessionReq>> violations = validator.validate(chargingSessionReq);
         assertNotEquals(violations.size(), 0);
     }
+
     @Test
     void should_be_valid_when_driverId_contains_valid_characters_and_is_adequately_long() {
         //given
-        String driverId="validDriverToken123validDriverToken123";
+        String driverId = "validDriverToken123validDriverToken123";
         //when
-        chargingSessionReq = new ChargingSessionReq(UUID.fromString("123e4567-e89b-12d3-a456-426614174000")       ,driverId
-                ,callbackUrl);
+        chargingSessionReq = new ChargingSessionReq(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), driverId, callbackUrl);
         //then
         Set<ConstraintViolation<ChargingSessionReq>> violations = validator.validate(chargingSessionReq);
         assertEquals(violations.size(), 0);
@@ -103,9 +103,7 @@ class GatewayControllerTest {
         //https://www.rfc-editor.org/rfc/rfc3986#section-2
         String badString = "httpÖ";
         //when-then
-        assertThrows(
-                Exception.class,() -> callbackUrl = URL.of(new URI(badString),null)
-                );
+        assertThrows(Exception.class, () -> callbackUrl = URL.of(new URI(badString), null));
     }
 
     @Test
@@ -118,13 +116,15 @@ class GatewayControllerTest {
         assertNotNull(chargingSessionReq);
     }
 
-
-
-    //@Test
+   // @Test
     void should_return_chargingSessionResponse() {
+        //given
+        ChargingSessionResp expectedChargingSessionResp = new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL.");
         //when
-        //gatewayService.createChargingSession();
-        //thenreturn
-        new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL.");
+        Mockito.when(gatewayService.createChargingSession(chargingSessionReq)).thenReturn(new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL."));
+        //then-return
+        ChargingSessionResp actualChargingSessionResp = gatewayController.createChargingSession(chargingSessionReq);
+        assertEquals(expectedChargingSessionResp.message(), actualChargingSessionResp.message());
+        assertEquals(expectedChargingSessionResp.status(), actualChargingSessionResp.status());
     }
 }
