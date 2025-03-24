@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 class GatewayControllerTest {
@@ -116,12 +117,12 @@ class GatewayControllerTest {
         assertNotNull(chargingSessionReq);
     }
 
-   // @Test
+    //@Test
     void should_return_chargingSessionResponse() {
         //given
         ChargingSessionResp expectedChargingSessionResp = new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL.");
         //when
-        Mockito.when(gatewayService.createChargingSession(chargingSessionReq)).thenReturn(new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL."));
+        Mockito.when(gatewayService.createChargingSession(any(ChargingSessionReq.class))).thenReturn(new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL."));
         //then-return
         ChargingSessionResp actualChargingSessionResp = gatewayController.createChargingSession(chargingSessionReq);
         assertEquals(expectedChargingSessionResp.message(), actualChargingSessionResp.message());
