@@ -1,0 +1,10 @@
+{
+"type":"record",
+"name":"AuthorizationCheckEvent",
+"namespace":"cp.chargeotg.mq",
+"fields": [
+{"name":"stationId","type":"string"},
+{"name":"driverToken","type":"string"},
+{"name":"callbackUrl","type":"string"}
+]
+}

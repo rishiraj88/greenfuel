@@ -1,13 +1,13 @@
-# chargingfuel
+# Green Fuel
 Goal: to start a charging session with ChargePoint
 
-## Actors in Use Cases
+## Use Case to Implement
+As a driver, I want to get an immediate acknowledgement of my request to start a charging session at a station and a decision on whether I am allowed to charge my vehicle at the station.
+
+## Actors in the Use Cases
 - driver, with driver app AutoDash on a mobile device
 - ChargePoint operator (CPO)
 - E-Mobility service provider (EMSP) 
-
-## Use Case
-As a driver, I want to get an immediate acknowledgement of my request to start a charging session at a station and a decision on whether I am allowed to charge my vehicle at the station.
 
 ## 3 Apps have been developed to achieve the goal:
 - autodash: driver app AutoDash
