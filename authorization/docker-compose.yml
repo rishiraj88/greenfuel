@@ -1,0 +1,23 @@
+version: '4'
+services:
+  authzdb:
+    image: mongo:7.0.5
+    container_name: authzdb
+    ports:
+      - "27037:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: authzdb
+    volumes:
+      - ./data:/data/db
+
+  authz:
+    build:
+      context: .
+      dockerfile: local.Dockerfile
+    container_name: authz
+    ports:
+      - "8082:8082"
+    depends_on:
+      - authzdb
