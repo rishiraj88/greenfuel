@@ -4,7 +4,6 @@ import cp.chargeotg.gateway.dto.ChargingSessionReq;
 import cp.chargeotg.gateway.dto.ChargingSessionResp;
 import cp.chargeotg.gateway.service.GatewayService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;

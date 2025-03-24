@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 @SpringBootTest
 class GatewayApplicationTests {
 
+
 	@Test
 	void contextLoads() {
 	}
