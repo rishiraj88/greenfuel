@@ -13,7 +13,7 @@ RUN mkdir target
 
 LABEL maintainer="Rishi Raj"
 LABEL version="1.0"
-LABEL description="Dockerfile for Charging Session Management System::Gateway with JDK 21, Confluent Kafka and MongoDB"
+LABEL description="Dockerfile for Charging Session Management System::Gateway with JDK 21, Kafka and MongoDB"
 
 COPY --from=build /app/target/gateway-0.0.1-SNAPSHOT.jar /app/target/
 EXPOSE 8080

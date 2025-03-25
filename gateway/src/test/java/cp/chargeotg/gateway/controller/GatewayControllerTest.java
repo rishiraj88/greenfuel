@@ -63,7 +63,6 @@ class GatewayControllerTest {
         chargingSessionReq = new ChargingSessionReq(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "0123456789shortId19", callbackUrl);
         //then
         Set<ConstraintViolation<ChargingSessionReq>> violations = validator.validate(chargingSessionReq);
-        System.out.println(violations);
         assertNotEquals(violations.size(), 0);
     }
 
@@ -73,7 +72,6 @@ class GatewayControllerTest {
         chargingSessionReq = new ChargingSessionReq(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "0123456789".repeat(8) + "1", callbackUrl);
         //then
         Set<ConstraintViolation<ChargingSessionReq>> violations = validator.validate(chargingSessionReq);
-        System.out.println(violations);
         assertNotEquals(violations.size(), 0);
     }
 
@@ -107,7 +105,7 @@ class GatewayControllerTest {
         assertThrows(Exception.class, () -> callbackUrl = URL.of(new URI(badString), null));
     }
 
-    @Test
+    @Test @SuppressWarnings("deprecated")
     void should_be_valid_when_URL_string_is_a_valid_URI() throws MalformedURLException {
         //given
         String niceString = "https://www.google.com/search?q=sdfsdfasdf&newwindow=1";
