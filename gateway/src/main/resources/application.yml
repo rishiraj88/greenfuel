@@ -10,4 +10,5 @@ kafka:
     group: tunnelGroup
   bootstrap-servers: ${KAFKA_SERVER:kafka-service}:${KAFKA_PORT:9092}
   topic:
+    forward: topic-pub
     reply: topic-sub

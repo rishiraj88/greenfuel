@@ -1,7 +1,7 @@
 package cp.chargeotg.gateway.config;
 
-import cp.chargeotg.mq.AuthorizationCheckEvent;
-import cp.chargeotg.mq.ChargingSessionResp;
+import cp.chargeotg.dto.AuthorizationCheckEvent;
+import cp.chargeotg.dto.ChargingSessionResp;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
