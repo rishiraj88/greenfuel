@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: authorization
+
+server:
+  port: 8082
+
+kafka:
+  tunnel:
+    group: tunnelGroup
+  bootstrap-servers: ${KAFKA_SERVER:kafka-service}:${KAFKA_PORT:9092}
+  topic:
+    producer: topic-sub
+    consumer: topic-pub
