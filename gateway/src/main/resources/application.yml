@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: gateway
+
+server:
+  port: 8080
+
+kafka:
+  tunnel:
+    group: tunnelGroup
+  bootstrap-servers: ${KAFKA_SERVER:kafka-service}:${KAFKA_PORT:9092}
+  topic:
+    reply: topic-sub
