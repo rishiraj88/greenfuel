@@ -25,6 +25,11 @@ public class GatewayController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ChargingSessionResp createChargingSession(@RequestBody @Valid ChargingSessionReq chargingSessionReq) {
-        return gatewayService.createChargingSession(chargingSessionReq);
+        gatewayService.createChargingSession(chargingSessionReq);
+
+        //TODO make call to HTTP/HTTPS API.
+
+        //TODO to add if-else for validation?
+        return new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL.");
     }
 }
