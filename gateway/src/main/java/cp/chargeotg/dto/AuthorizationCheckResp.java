@@ -1,2 +1,3 @@
 package cp.chargeotg.dto;
-public record AuthorizationCheckReq(String stationId, String driverToken, String callbackUrl){}
+
+public record AuthorizationCheckResp(String stationId, String driverToken, String status){}

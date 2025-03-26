@@ -1,5 +1,6 @@
 package cp.chargeotg.gateway.controller;
 
+import cp.chargeotg.dto.AuthorizationCheckResp;
 import cp.chargeotg.dto.ChargingSessionReq;
 import cp.chargeotg.dto.ChargingSessionResp;
 import cp.chargeotg.gateway.service.GatewayServiceImpl;
@@ -30,20 +31,25 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-@SpringBootTest
+//@SpringBootTest
 class GatewayControllerTest {
     private static ChargingSessionReq chargingSessionReq;
     private static URL callbackUrl;
     private static Validator validator;
+
     @InjectMocks
     private GatewayController gatewayController;
+
     @Mock
     private GatewayServiceImpl gatewayService;
 
     @BeforeAll
     static void beforeAll() throws URISyntaxException, MalformedURLException {
+        //callbackUrl is not fixed, is to be configurable.
         callbackUrl = URL.of(new URI("http://localhost:8080/api/v1/gateway"), null);
+
         chargingSessionReq = new ChargingSessionReq(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "validDriverToken123validDriverToken123", callbackUrl);
+
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -120,7 +126,7 @@ class GatewayControllerTest {
         //given
         ChargingSessionResp expectedChargingSessionResp = new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL.");
         //when
-        Mockito.when(gatewayService.createChargingSession(any(ChargingSessionReq.class))).thenReturn(new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL."));
+        Mockito.when(gatewayService.createChargingSession(any(ChargingSessionReq.class))).thenReturn(new AuthorizationCheckResp("123e4567-e89b-12d3-a456-426614174000","validDriverToken123validDriverToken123", "allowed"));
         //then-return
         ChargingSessionResp actualChargingSessionResp = gatewayController.createChargingSession(chargingSessionReq);
         assertEquals(expectedChargingSessionResp.message(), actualChargingSessionResp.message());

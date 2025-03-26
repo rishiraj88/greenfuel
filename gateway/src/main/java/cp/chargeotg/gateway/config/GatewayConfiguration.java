@@ -1,7 +1,7 @@
 package cp.chargeotg.gateway.config;
 
-import cp.chargeotg.dto.AuthorizationCheckEvent;
-import cp.chargeotg.dto.ChargingSessionResp;
+import cp.chargeotg.dto.AuthorizationCheckReq;
+import cp.chargeotg.dto.AuthorizationCheckResp;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -36,12 +36,12 @@ public class GatewayConfiguration {
 	@Value("${kafka.tunnel.group}")
 	private String tunnelGroup;
 
-	@Value("${kafka.topic.reply}")
+	@Value("${kafka.topic.consumer}")
 	private String replyTopic;
 
 	@Bean
-	public ReplyingKafkaTemplate<String, AuthorizationCheckEvent, ChargingSessionResp> gwReplyingKafkaTemplate() {
-		ReplyingKafkaTemplate<String,  AuthorizationCheckEvent, ChargingSessionResp> replyingKafkaTemplate = new ReplyingKafkaTemplate<>(producerFactory(), replyContainer());
+	public ReplyingKafkaTemplate<String, AuthorizationCheckReq, AuthorizationCheckResp> gwReplyingKafkaTemplate() {
+		ReplyingKafkaTemplate<String,  AuthorizationCheckReq, AuthorizationCheckResp> replyingKafkaTemplate = new ReplyingKafkaTemplate<>(producerFactory(), replyContainer());
 		replyingKafkaTemplate.setSharedReplyTopic(false);
 		replyingKafkaTemplate.start();
 		return replyingKafkaTemplate;
@@ -67,14 +67,14 @@ public class GatewayConfiguration {
 	}
 
 	@Bean
-	public KafkaMessageListenerContainer<String, ChargingSessionResp> replyContainer() {
+	public KafkaMessageListenerContainer<String, AuthorizationCheckResp> replyContainer() {
 		ContainerProperties containerProperties = new ContainerProperties(replyTopic);
 		return new KafkaMessageListenerContainer<>(consumerFactory(), containerProperties);
 	}
 
 	@Bean
-	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ChargingSessionResp>> kafkaListenerContainerFactory() {
-		ConcurrentKafkaListenerContainerFactory<String, ChargingSessionResp> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, AuthorizationCheckResp>> kafkaListenerContainerFactory() {
+		ConcurrentKafkaListenerContainerFactory<String, AuthorizationCheckResp> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
 		factory.setAutoStartup(true);
 		factory.setBatchListener(false);
@@ -82,12 +82,12 @@ public class GatewayConfiguration {
 	}
 
 	@Bean
-	public ConsumerFactory<String, ChargingSessionResp> consumerFactory() {
-		return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), new JsonDeserializer<>(ChargingSessionResp.class));
+	public ConsumerFactory<String, AuthorizationCheckResp> consumerFactory() {
+		return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), new JsonDeserializer<>(AuthorizationCheckResp.class));
 	}
 
 	@Bean
-	public ProducerFactory<String, AuthorizationCheckEvent> producerFactory() {
+	public ProducerFactory<String, AuthorizationCheckReq> producerFactory() {
 		return new DefaultKafkaProducerFactory<>(producerConfigs());
 	}
 }

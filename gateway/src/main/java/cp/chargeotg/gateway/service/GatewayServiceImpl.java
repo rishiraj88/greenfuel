@@ -1,8 +1,8 @@
 package cp.chargeotg.gateway.service;
 
-import cp.chargeotg.dto.AuthorizationCheckEvent;
+import cp.chargeotg.dto.AuthorizationCheckReq;
+import cp.chargeotg.dto.AuthorizationCheckResp;
 import cp.chargeotg.dto.ChargingSessionReq;
-import cp.chargeotg.dto.ChargingSessionResp;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
@@ -22,52 +22,47 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 public class GatewayServiceImpl implements GatewayService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GatewayServiceImpl.class);
+    @Value("${kafka.topic.producer}")
+    private String forwardTopic;
+    @Value("${kafka.topic.consumer}")
+    private String replyTopic;
+    @Autowired
+    private ReplyingKafkaTemplate<String, AuthorizationCheckReq, AuthorizationCheckResp> gwReplyingKafkaTemplate;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GatewayServiceImpl.class);
-
-	@Value("${kafka.topic.forward}")
-	private String forwardTopic;
-
-	@Value("${kafka.topic.reply}")
-	private String replyTopic;
-
-	@Autowired
-	private ReplyingKafkaTemplate<String, AuthorizationCheckEvent, ChargingSessionResp> gwReplyingKafkaTemplate;
-
-	@Override
-	public ChargingSessionResp createChargingSession(ChargingSessionReq chargingSessionReq) {
-		try {
-			AuthorizationCheckEvent authorizationCheckEvent = new AuthorizationCheckEvent(chargingSessionReq.stationUuid().toString(), chargingSessionReq.driverId(), chargingSessionReq.callbackUrl().toString());
-
-			gwReplyingKafkaTemplate.start();
-			LOGGER.info("Sending {}...", authorizationCheckEvent.getClass());
-
-			ProducerRecord<String, AuthorizationCheckEvent> producerRecord = new ProducerRecord<>(forwardTopic, authorizationCheckEvent);
-
-			producerRecord.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes()));
-			RequestReplyFuture<String, AuthorizationCheckEvent,ChargingSessionResp> requestReplyFutureForChargingSession = gwReplyingKafkaTemplate.sendAndReceive(producerRecord);
-
-			SendResult<String, AuthorizationCheckEvent> result = requestReplyFutureForChargingSession.getSendFuture().get(10, TimeUnit.SECONDS);
-			LOGGER.info("The result of sending {} is: {}", authorizationCheckEvent.getClass(), result.getProducerRecord().value().toString());
-
-			ConsumerRecord<String, ChargingSessionResp> consumerRecord = requestReplyFutureForChargingSession.get(10, TimeUnit.SECONDS);
-			ChargingSessionResp chargingSessionResp = (ChargingSessionResp) consumerRecord.value();
-			LOGGER.info("Received the record {} in exchange.",chargingSessionResp);
-			return chargingSessionResp;
-
-		} catch (InterruptedException e) {
-			LOGGER.error(e.getMessage());
-		} catch (ExecutionException e) {
-			LOGGER.error(e.getMessage());
-		} catch (TimeoutException e) {
-			LOGGER.error(e.getMessage());
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		} finally
-		{
-			gwReplyingKafkaTemplate.stop();
-		}
-		return null;
-	}
-
+    @Override
+    public AuthorizationCheckResp createChargingSession(ChargingSessionReq chargingSessionReq) {
+        try {
+            AuthorizationCheckReq authorizationCheckReq = new AuthorizationCheckReq(chargingSessionReq.stationUuid().toString(), chargingSessionReq.driverId(), chargingSessionReq.callbackUrl().toString());
+            gwReplyingKafkaTemplate.start();
+            LOGGER.info("Sending {}...", authorizationCheckReq.getClass());
+            ProducerRecord<String, AuthorizationCheckReq> producerRecord = new ProducerRecord<>(forwardTopic, authorizationCheckReq);
+            producerRecord.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes()));
+            RequestReplyFuture<String, AuthorizationCheckReq, AuthorizationCheckResp> requestReplyFutureForChargingSession = gwReplyingKafkaTemplate.sendAndReceive(producerRecord);
+            // sendResult
+            SendResult<String, AuthorizationCheckReq> result = requestReplyFutureForChargingSession.getSendFuture().get(10, TimeUnit.SECONDS);
+            LOGGER.info("The result of sending {} is: {}", authorizationCheckReq.getClass(), result.getProducerRecord().value().toString());
+            // received record
+            ConsumerRecord<String, AuthorizationCheckResp> consumerRecord = requestReplyFutureForChargingSession.get(10, TimeUnit.SECONDS);
+            // when no timeout happens in obtaining the record
+            AuthorizationCheckResp authorizationCheckResp = (AuthorizationCheckResp) consumerRecord.value();
+            LOGGER.info("Received the record {} in exchange.", authorizationCheckResp);
+            return authorizationCheckResp;
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
+        } catch (ExecutionException e) {
+            LOGGER.error(e.getMessage());
+        } catch (TimeoutException e) {
+            // when no timeout happens in obtaining the record
+            LOGGER.error(e.getMessage());
+            AuthorizationCheckResp authorizationCheckResp = new AuthorizationCheckResp(chargingSessionReq.stationUuid().toString(), chargingSessionReq.driverId(), "unknown");
+            LOGGER.info("Set the driven token to 'unknown' due to timeout. The updated record is: {}", authorizationCheckResp);
+            return authorizationCheckResp;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            gwReplyingKafkaTemplate.stop();
+        }
+        return null;
+    }
 }

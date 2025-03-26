@@ -1,7 +1,9 @@
 package cp.chargeotg.gateway.controller;
 
+import cp.chargeotg.dto.AuthorizationCheckResp;
 import cp.chargeotg.dto.ChargingSessionReq;
 import cp.chargeotg.dto.ChargingSessionResp;
+import cp.chargeotg.gateway.clients.AutodashClient;
 import cp.chargeotg.gateway.service.GatewayService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -17,19 +19,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/gateway")
 public class GatewayController {
     private final GatewayService gatewayService;
+    private final AutodashClient autodashClient;
 
-    public GatewayController(GatewayService gatewayService) {
+    public GatewayController(GatewayService gatewayService, AutodashClient autodashClient) {
         this.gatewayService = gatewayService;
+        this.autodashClient = autodashClient;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ChargingSessionResp createChargingSession(@RequestBody @Valid ChargingSessionReq chargingSessionReq) {
-        gatewayService.createChargingSession(chargingSessionReq);
+        AuthorizationCheckResp authorizationCheckResp = gatewayService.createChargingSession(chargingSessionReq);
 
-        //TODO make call to HTTP/HTTPS API.
+        // make call to HTTP/HTTPS API.
+        autodashClient.processChargingSessionAuthorizationStatusForDriver(authorizationCheckResp);
 
-        //TODO to add if-else for validation?
+        //Curious query: to add if-else for validation?
         return new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL.");
     }
 }
