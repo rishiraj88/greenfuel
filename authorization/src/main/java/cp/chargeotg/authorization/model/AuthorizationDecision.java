@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Builder @AllArgsConstructor @NoArgsConstructor
-@Document(value = "product")
+@Document(value = "driver_authz_status")
 public class AuthorizationDecision {
     @Id
     private String id;

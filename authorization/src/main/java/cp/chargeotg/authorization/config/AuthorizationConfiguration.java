@@ -1,7 +1,7 @@
 package cp.chargeotg.authorization.config;
 
-import cp.chargeotg.dto.AuthorizationCheckEvent;
-import cp.chargeotg.dto.ChargingSessionResp;
+import cp.chargeotg.dto.AuthorizationCheckReq;
+import cp.chargeotg.dto.AuthorizationCheckResp;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Configuration
 @EnableKafka
-public class AuthorizationConfig {
+public class AuthorizationConfiguration {
 
 	@Value("${kafka.bootstrap-servers}")
 	private String bootstrapServers;
@@ -36,16 +36,16 @@ public class AuthorizationConfig {
 	private String forwardTopic;
 
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, AuthorizationCheckEvent> kafkaListenerContainerFactory() {
-		ConcurrentKafkaListenerContainerFactory<String, AuthorizationCheckEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	public ConcurrentKafkaListenerContainerFactory<String, AuthorizationCheckReq> kafkaListenerContainerFactory() {
+		ConcurrentKafkaListenerContainerFactory<String, AuthorizationCheckReq> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
 		factory.setReplyTemplate(replyTemplate());
 		return factory;
 	}
 
 	@Bean
-	public ConsumerFactory<String, AuthorizationCheckEvent> consumerFactory() {
-		return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), new JsonDeserializer<>(AuthorizationCheckEvent.class));
+	public ConsumerFactory<String, AuthorizationCheckReq> consumerFactory() {
+		return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), new JsonDeserializer<>(AuthorizationCheckReq.class));
 	}
 
 	@Bean
@@ -59,14 +59,14 @@ public class AuthorizationConfig {
 	}
 
 	@Bean
-	public KafkaTemplate<String, ChargingSessionResp> replyTemplate() {
-		KafkaTemplate<String, ChargingSessionResp> kafkaTemplate = new KafkaTemplate<>(producerFactory());
+	public KafkaTemplate<String, AuthorizationCheckResp> replyTemplate() {
+		KafkaTemplate<String, AuthorizationCheckResp> kafkaTemplate = new KafkaTemplate<>(producerFactory());
 		kafkaTemplate.setDefaultTopic(forwardTopic);
 		return kafkaTemplate;
 	}
 
 	@Bean
-	public ProducerFactory<String, ChargingSessionResp> producerFactory() {
+	public ProducerFactory<String, AuthorizationCheckResp> producerFactory() {
 		return new DefaultKafkaProducerFactory<>(producerConfigs());
 	}
 

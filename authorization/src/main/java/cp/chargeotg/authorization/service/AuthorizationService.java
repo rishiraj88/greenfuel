@@ -1,9 +1,11 @@
 package cp.chargeotg.authorization.service;
-import cp.chargeotg.authorization.model.AuthorizationDecision;
-import cp.chargeotg.mq.AuthorizationCheckEvent;
-import org.springframework.kafka.annotation.KafkaListener;
 
-public interface AuthorizationService {
-    @KafkaListener(topics = "authz-check")
-    AuthorizationDecision checkAuthorization(AuthorizationCheckEvent authorizationCheckEvent);
+import cp.chargeotg.authorization.model.AuthorizationDecision;
+import cp.chargeotg.dto.AuthorizationCheckReq;
+import cp.chargeotg.dto.AuthorizationCheckResp;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+public interface AuthorizationService{
+    public AuthorizationCheckResp checkAuthorization(ConsumerRecord<String, AuthorizationCheckReq> record, byte[] correlationId);
+
 }
