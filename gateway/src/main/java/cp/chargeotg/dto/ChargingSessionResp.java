@@ -1,4 +1,4 @@
-package cp.chargeotg.mq;
+package cp.chargeotg.dto;
 
 public record ChargingSessionResp(String status, String message) {
 }

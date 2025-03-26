@@ -66,7 +66,6 @@ public class GatewayConfiguration {
 		return props;
 	}
 
-
 	@Bean
 	public KafkaMessageListenerContainer<String, ChargingSessionResp> replyContainer() {
 		ContainerProperties containerProperties = new ContainerProperties(replyTopic);
