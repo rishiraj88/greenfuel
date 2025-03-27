@@ -1,14 +1,21 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: gateway
-
-server:
-  port: 8080
+  kafka:
+    bootstrap-servers: localhost:9094,localhost:9095,localhost:9096
+    producer:
+      bootstrap-servers: localhost:9094,localhost:9095,localhost:9096
+    consumer:
+      bootstrap-servers: localhost:9094,localhost:9095,localhost:9096
 
 kafka:
   tunnel:
     group: tunnelGroup
-  bootstrap-servers: ${KAFKA_SERVER:kafka-service}:${KAFKA_PORT:9092}
+  bootstrap-servers: localhost:9094,localhost:9095,localhost:9096
   topic:
     producer: topic-pub
     consumer: topic-sub
+
