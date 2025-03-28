@@ -28,6 +28,11 @@ driver group (employee, others),
 access hours (weekday officehours, nights and weekends)
 }</code>
 
+## CSMS: Request-Response Flow Diagram
+
+
+![Request-Response Flow Diagram](./CSMS request-response flow diagram.png)
+
 ## Steps to create and publish containers:
 <code>
 -- while in autodash project directory
