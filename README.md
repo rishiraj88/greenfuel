@@ -30,6 +30,7 @@ access hours (weekday officehours, nights and weekends)
 
 ## CSMS: Request-Response Flow Diagram
 
+![realm-creation-success-in-keycloak-admin](https://github.com/rishiraj88/greenfuel/blob/main/CSMS%20request-response%20flow%20diagram.png)
 
 ![Request-Response Flow Diagram](./CSMS request-response flow diagram.png)
 
