@@ -7,6 +7,7 @@ import cp.chargeotg.gateway.clients.AutodashClient;
 import cp.chargeotg.gateway.service.GatewayService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,11 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/gateway")
 public class GatewayController {
     private final GatewayService gatewayService;
-    private final AutodashClient autodashClient;
+    @Autowired
+    private AutodashClient autodashClient;
 
-    public GatewayController(GatewayService gatewayService, AutodashClient autodashClient) {
+    public GatewayController(GatewayService gatewayService) {
         this.gatewayService = gatewayService;
-        this.autodashClient = autodashClient;
     }
 
     @PostMapping
@@ -34,7 +35,6 @@ public class GatewayController {
         // make call to HTTP/HTTPS API.
         autodashClient.processChargingSessionAuthorizationStatusForDriver(authorizationCheckResp);
 
-        //Curious query: to add if-else for validation?
         return new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL.");
     }
 }

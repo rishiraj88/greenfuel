@@ -1,0 +1,29 @@
+services:
+  authorizationdb:
+    image: mongo:7.0.5
+    container_name: authorization
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: authzdb
+    volumes:
+      - ./data:/data/db
+
+  authorization:
+    build:
+      context: .
+      dockerfile: local.Dockerfile
+    container_name: authorization
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9092,kafka3:9092
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=tunnel
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+      - authorizationdb

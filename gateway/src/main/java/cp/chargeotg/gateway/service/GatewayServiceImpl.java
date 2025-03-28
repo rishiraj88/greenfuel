@@ -33,27 +33,28 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public AuthorizationCheckResp createChargingSession(ChargingSessionReq chargingSessionReq) {
         try {
-            AuthorizationCheckReq authorizationCheckReq = new AuthorizationCheckReq(chargingSessionReq.stationUuid().toString(), chargingSessionReq.driverId(), chargingSessionReq.callbackUrl().toString());
+            var authorizationCheckReq = new AuthorizationCheckReq(chargingSessionReq.stationUuid().toString(), chargingSessionReq.driverId(), chargingSessionReq.callbackUrl().toString());
             gwReplyingKafkaTemplate.start();
+
             LOGGER.info("Sending {}...", authorizationCheckReq.getClass());
             ProducerRecord<String, AuthorizationCheckReq> producerRecord = new ProducerRecord<>(forwardTopic, authorizationCheckReq);
             producerRecord.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes()));
-            RequestReplyFuture<String, AuthorizationCheckReq, AuthorizationCheckResp> requestReplyFutureForChargingSession = gwReplyingKafkaTemplate.sendAndReceive(producerRecord);
+            var requestReplyFutureForChargingSession = gwReplyingKafkaTemplate.sendAndReceive(producerRecord);
+
             // sendResult
-            SendResult<String, AuthorizationCheckReq> result = requestReplyFutureForChargingSession.getSendFuture().get(10, TimeUnit.SECONDS);
+            var result = requestReplyFutureForChargingSession.getSendFuture().get(10, TimeUnit.SECONDS);
             LOGGER.info("The result of sending {} is: {}", authorizationCheckReq.getClass(), result.getProducerRecord().value().toString());
+
             // received record
-            ConsumerRecord<String, AuthorizationCheckResp> consumerRecord = requestReplyFutureForChargingSession.get(10, TimeUnit.SECONDS);
+            var consumerRecord = requestReplyFutureForChargingSession.get(10, TimeUnit.SECONDS);
+
             // when no timeout happens in obtaining the record
             AuthorizationCheckResp authorizationCheckResp = (AuthorizationCheckResp) consumerRecord.value();
             LOGGER.info("Received the record {} in exchange.", authorizationCheckResp);
             return authorizationCheckResp;
-        } catch (InterruptedException e) {
-            LOGGER.error(e.getMessage());
-        } catch (ExecutionException e) {
-            LOGGER.error(e.getMessage());
+
         } catch (TimeoutException e) {
-            // when no timeout happens in obtaining the record
+            // when a timeout happens in obtaining the record
             LOGGER.error(e.getMessage());
             AuthorizationCheckResp authorizationCheckResp = new AuthorizationCheckResp(chargingSessionReq.stationUuid().toString(), chargingSessionReq.driverId(), "unknown");
             LOGGER.info("Set the driven token to 'unknown' due to timeout. The updated record is: {}", authorizationCheckResp);

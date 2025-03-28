@@ -1,0 +1,9 @@
+version: '4'
+services:
+  autodash:
+    build:
+      context: .
+      dockerfile: local.Dockerfile
+    container_name: autodash
+    ports:
+      - "8084:8084"

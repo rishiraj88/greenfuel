@@ -38,7 +38,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         consumerRecord.headers().add(KafkaHeaders.CORRELATION_ID, correlationId);
         AuthorizationCheckReq authorizationCheckReq = consumerRecord.value();
 
-
         AuthorizationDecision decision = new AuthorizationDecision();
         decision.setStationId(authorizationCheckReq.stationId());
         decision.setDriverToken(authorizationCheckReq.driverToken());

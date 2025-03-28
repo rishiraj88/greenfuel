@@ -5,17 +5,16 @@ spring:
   application:
     name: gateway
   kafka:
-    bootstrap-servers: localhost:9094,localhost:9095,localhost:9096
-    producer:
-      bootstrap-servers: localhost:9094,localhost:9095,localhost:9096
-    consumer:
-      bootstrap-servers: localhost:9094,localhost:9095,localhost:9096
+    bootstrap-servers: kafka1:9092,kafka2:9092,kafka3:9092
 
 kafka:
   tunnel:
     group: tunnelGroup
-  bootstrap-servers: localhost:9094,localhost:9095,localhost:9096
+  bootstrap-servers: kafka1:9092,kafka2:9092,kafka3:9092
   topic:
     producer: topic-pub
     consumer: topic-sub
 
+autodash:
+  connect:
+    url: http://localhost:8084

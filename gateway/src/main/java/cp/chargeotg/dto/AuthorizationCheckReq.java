@@ -1,2 +1,5 @@
 package cp.chargeotg.dto;
-public record AuthorizationCheckReq(String stationId, String driverToken, String callbackUrl){}
+
+import java.io.Serializable;
+
+public record AuthorizationCheckReq(String stationId, String driverToken, String callbackUrl) implements Serializable {}

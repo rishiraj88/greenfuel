@@ -3,6 +3,7 @@ package cp.chargeotg.dto;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.UUID;
 

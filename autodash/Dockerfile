@@ -4,7 +4,7 @@ FROM maven:3.9.9-amazoncorretto-21-alpine AS build
 WORKDIR /app
 COPY ./src src
 COPY ./pom.xml .
-RUN mvn package
+RUN mvn clean package
 
 # Deploy
 FROM amazoncorretto:21-alpine3.21 AS deploy
@@ -18,5 +18,3 @@ LABEL description="Dockerfile for Charging Session Management System::Auto Dashb
 COPY --from=build /app/target/autodash-0.0.1-SNAPSHOT.jar /app/target/
 EXPOSE 8084
 CMD [ "java", "-jar","target/autodash-0.0.1-SNAPSHOT.jar" ]
-
-VOLUME ./data:/data/db

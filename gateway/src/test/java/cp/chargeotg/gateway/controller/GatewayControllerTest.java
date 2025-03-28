@@ -3,11 +3,13 @@ package cp.chargeotg.gateway.controller;
 import cp.chargeotg.dto.AuthorizationCheckResp;
 import cp.chargeotg.dto.ChargingSessionReq;
 import cp.chargeotg.dto.ChargingSessionResp;
+import cp.chargeotg.gateway.clients.AutodashClient;
 import cp.chargeotg.gateway.service.GatewayServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-//@SpringBootTest
+@SpringBootTest
 class GatewayControllerTest {
     private static ChargingSessionReq chargingSessionReq;
     private static URL callbackUrl;
@@ -42,6 +44,9 @@ class GatewayControllerTest {
 
     @Mock
     private GatewayServiceImpl gatewayService;
+    @Mock
+    private AutodashClient autodashClient;
+
 
     @BeforeAll
     static void beforeAll() throws URISyntaxException, MalformedURLException {
@@ -127,6 +132,7 @@ class GatewayControllerTest {
         ChargingSessionResp expectedChargingSessionResp = new ChargingSessionResp("accepted", "Request is being processed asynchronously. The result will be sent to the provided callback URL.");
         //when
         Mockito.when(gatewayService.createChargingSession(any(ChargingSessionReq.class))).thenReturn(new AuthorizationCheckResp("123e4567-e89b-12d3-a456-426614174000","validDriverToken123validDriverToken123", "allowed"));
+        Mockito.doNothing().when(autodashClient).processChargingSessionAuthorizationStatusForDriver(new AuthorizationCheckResp("","",""));
         //then-return
         ChargingSessionResp actualChargingSessionResp = gatewayController.createChargingSession(chargingSessionReq);
         assertEquals(expectedChargingSessionResp.message(), actualChargingSessionResp.message());
