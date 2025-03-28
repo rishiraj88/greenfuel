@@ -51,3 +51,5 @@ $ docker build -f local.Dockerfile -t i50729/cp-authz:0.0.1-SNAPSHOT .
 $ docker push i50729/cp-authz:0.0.1-SNAPSHOT
 </code>
 
+## Notes
+Due to some issues with development tools, testing has been superficial only. Thank you for understanding and support.
