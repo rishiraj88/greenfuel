@@ -1,5 +1,5 @@
 # Green Fuel
-Goal: to start a charging session with ChargePoint
+Goal: to start a charging session with a charge point.
 
 ## Use Case to Implement
 As a driver, I want to get an immediate acknowledgement of my request to start a charging session at a station and a decision on whether I am allowed to charge my vehicle at the station.
